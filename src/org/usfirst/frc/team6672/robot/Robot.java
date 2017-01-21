@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+//import edu.wpi.first.wpilibj.PIDController;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -17,9 +19,10 @@ public class Robot extends IterativeRobot {
 	
 	// VARIABLES
 	
-	RobotDrive myRobot = new RobotDrive(0, 1);
+	RobotDrive myRobot = new RobotDrive(1, 0);
 	Joystick stick0 = new Joystick(0);
 	Timer timer = new Timer();
+	boolean turbo = false;
 
 	/**
 	 * This function is run when the robot is first started up and should 
@@ -49,25 +52,27 @@ public class Robot extends IterativeRobot {
 		} else {
 			myRobot.drive(0.0, 0.0); // stop robot
 		}
-	}
-
+	}	
+	
 	/**
 	 * This function is called once each time the robot enters tele-operated
 	 * mode
 	 */
 	@Override
 	public void teleopInit() {
+
 	}
 
 	/**
-	 * This function is called periodically during operator control
-	 */
+	 *	This function is called periodically during operator control
+	*/
+	
 	@Override
 	public void teleopPeriodic() {
-		myRobot.setMaxOutput(0.5);
-		myRobot.tankDrive(stick0.getRawAxis(5), stick0.getRawAxis(1));
+		//myRobot.setMaxOutput(0.5);
+		myRobot.tankDrive(stick0.getRawAxis(1), stick0.getRawAxis(5));
 	}
-
+	
 	/**
 	 * This function is called periodically during test mode
 	 */
