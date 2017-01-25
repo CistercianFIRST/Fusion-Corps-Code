@@ -27,12 +27,11 @@ public class Robot extends IterativeRobot {
 
 	/* Speed Control System */
 	//boolean turbo = false; 			// DEPRECATED When turbo is false speedLimit is active
-	double speedLimitMove = 0.5;
-	double speedLimitMoveSlider;
+	double speedLimitMove = 0.45;
 	double speedLimitRotate = -0.5;
 	
 	/* Gyro Systems */
-	AnalogGyro gyro = new AnalogGyro(1);
+	AnalogGyro gyro = new AnalogGyro(0);
 	double Kp = 0.03;					//Gyro converter constant
 	
 	/**
@@ -61,8 +60,7 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void autonomousPeriodic() {
-		// Drive for 2 seconds
-		if (timer.get() < 2.0) {
+		if (timer.get() < 10.0) {
 			double angle = gyro.getAngle();
 			myRobot.drive(-0.5, -angle*Kp);	// drive forwards half speed, and correct heading with gyro
 		} else {
@@ -85,15 +83,11 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void teleopPeriodic() {
-		//myRobot.setMaxOutput(0.5);	// DEPRECATED Doesn't work for both motors
 		if(stick0.getRawButton(1)){		// Sets turbo button to trigger on joystick
 			speedLimitMove = 0.9;
 		}
 		if(!(stick0.getRawButton(1))){
 			speedLimitMove = 0.5;
-			//speedLimitMove = stick0.getRawAxis(3)*1.25;
-			//speedLimitMove = Math.max(speedLimitMove, 0.5);
-			//speedLimitMove = Math.min(speedLimitMove, 0.9);
 		}
 		myRobot.arcadeDrive(stick0.getRawAxis(1)*speedLimitMove, stick0.getRawAxis(0)*speedLimitRotate);
 	}
