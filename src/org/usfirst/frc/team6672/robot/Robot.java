@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.AnalogGyro;
-//import edu.wpi.first.wpilibj.PIDController;
+//import edu.wpi.first.wpilibj.PIDController; // Not useful
 
 
 /**
@@ -20,16 +20,20 @@ import edu.wpi.first.wpilibj.AnalogGyro;
 public class Robot extends IterativeRobot {
 	
 	RobotDrive myRobot = new RobotDrive(1, 0);
-	Joystick stick0 = new Joystick(0);
 	Timer timer = new Timer();
 	
-	// Speed Control System
-	boolean turbo = false; // When turbo is false speedLimit is active
-	double speedLimit = 0.5;
+	/* Joystick stuff */
+	Joystick stick0 = new Joystick(0);
+
+	/* Speed Control System */
+	//boolean turbo = false; 			// DEPRECATED When turbo is false speedLimit is active
+	double speedLimitMove = 0.5;
+	double speedLimitMoveSlider;
+	double speedLimitRotate = -0.5;
 	
-	// Gyro Systems
+	/* Gyro Systems */
 	AnalogGyro gyro = new AnalogGyro(1);
-	double Kp = 0.03;     //Gyro converter constant
+	double Kp = 0.03;					//Gyro converter constant
 	
 	/**
 	 * This function is run when the robot is first started up and should 
@@ -60,9 +64,9 @@ public class Robot extends IterativeRobot {
 		// Drive for 2 seconds
 		if (timer.get() < 2.0) {
 			double angle = gyro.getAngle();
-			myRobot.drive(-0.5, -angle*Kp); // drive forwards half speed, and correct heading with gyro
+			myRobot.drive(-0.5, -angle*Kp);	// drive forwards half speed, and correct heading with gyro
 		} else {
-			myRobot.drive(0.0, 0.0); // stop robot
+			myRobot.drive(0.0, 0.0);		// stop robot
 		}
 	}	
 	
@@ -81,11 +85,17 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void teleopPeriodic() {
-		//myRobot.setMaxOutput(0.5); // Doesn't work for both motors
-		if(turbo = true){
-			speedLimit = 1.0;
+		//myRobot.setMaxOutput(0.5);	// DEPRECATED Doesn't work for both motors
+		if(stick0.getRawButton(1)){		// Sets turbo button to trigger on joystick
+			speedLimitMove = 0.9;
 		}
-		myRobot.tankDrive(stick0.getRawAxis(1)*speedLimit, stick0.getRawAxis(5)*speedLimit);
+		if(!(stick0.getRawButton(1))){
+			speedLimitMove = 0.5;
+			//speedLimitMove = stick0.getRawAxis(3)*1.25;
+			//speedLimitMove = Math.max(speedLimitMove, 0.5);
+			//speedLimitMove = Math.min(speedLimitMove, 0.9);
+		}
+		myRobot.arcadeDrive(stick0.getRawAxis(1)*speedLimitMove, stick0.getRawAxis(0)*speedLimitRotate);
 	}
 	
 	/**
