@@ -27,12 +27,12 @@ public class Robot extends IterativeRobot {
 
 	/* Speed Control System */
 	//boolean turbo = false; 			// DEPRECATED When turbo is false speedLimit is active
-	double speedLimitMove = 0.45;
-	double speedLimitRotate = -0.5;
+	double speedLimitMove = 0.6;
+	double speedLimitRotate = -0.6;
 	
 	/* Gyro Systems */
 	AnalogGyro gyro = new AnalogGyro(0);
-	double Kp = 0.03;					//Gyro converter constant
+	double Kp = 1;					//Gyro converter constant
 	
 	/**
 	 * This function is run when the robot is first started up and should 
@@ -84,10 +84,10 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		if(stick0.getRawButton(1)){		// Sets turbo button to trigger on joystick
-			speedLimitMove = 0.9;
+			speedLimitMove = 1;
 		}
 		if(!(stick0.getRawButton(1))){
-			speedLimitMove = 0.5;
+			speedLimitMove = 0.6;
 		}
 		myRobot.arcadeDrive(stick0.getRawAxis(1)*speedLimitMove, stick0.getRawAxis(0)*speedLimitRotate);
 	}
