@@ -5,8 +5,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SPI.Port;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -30,9 +29,9 @@ public class Robot extends IterativeRobot {
 	double speedLimitRotate = -0.6;		// Has to be negative bc the joystick inverts l/r
 	
 	/* Gyro Systems */
-	SPI spiGyro = new SPI(Port.kOnboardCS0 );
+	ADXRS450_Gyro spiGyro = new ADXRS450_Gyro();
 	//AnalogGyro gyro = new AnalogGyro(1);
-	double Kp = 0.03;					//Gyro converter constant
+	double Kp = 0.03*.35;					//Gyro converter constant
 	
 	
 	/**
@@ -42,6 +41,9 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void robotInit() {
+		spiGyro.reset();
+		spiGyro.calibrate();
+		
 	}
 
 	/**
@@ -52,11 +54,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		timer.reset();
 		timer.start();
-		spiGyro.resetAccumulator();
-		spiGyro.setClockRate(4000000);
-		spiGyro.setClockActiveHigh();
-		spiGyro.setChipSelectActiveLow();
-		spiGyro.setMSBFirst();
+		
 	}
 
 	/**
@@ -66,8 +64,10 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		if (timer.get() < 5.0) {
-			double angle = spiGyro.getAccumulatorLastValue();
-			myRobot.drive(-1.0, -angle*Kp);	// drive forwards half speed, and correct heading with gyro
+			double angle = spiGyro.getAngle();
+			myRobot.drive(-0.4, angle*Kp);	// drive forwards half speed, and correct heading with gyro
+			
+			System.out.println(spiGyro.getAngle());
 		} else {
 			myRobot.drive(0.0, 0.0);		// stop robot
 		}
