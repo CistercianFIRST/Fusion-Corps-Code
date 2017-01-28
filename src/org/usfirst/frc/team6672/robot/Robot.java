@@ -30,7 +30,7 @@ public class Robot extends IterativeRobot {
 	double speedLimitRotate = -0.6;		// Has to be negative bc the joystick inverts l/r
 	
 	/* Gyro Systems */
-	SPI spiGyro = new SPI(Port.kOnboardCS0 );
+	SPI spiGyro = new SPI(Port.kMXP );
 	//AnalogGyro gyro = new AnalogGyro(1);
 	double Kp = 0.03;					//Gyro converter constant
 	
