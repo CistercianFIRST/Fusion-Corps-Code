@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.CameraServer;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -19,7 +20,6 @@ public class Robot extends IterativeRobot {
 		
 	RobotDrive myRobot = new RobotDrive(1, 0);
 	Timer timer = new Timer();
-	
 	
 	/* Joystick stuff */
 	Joystick stick0 = new Joystick(0);
@@ -43,9 +43,15 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		spiGyro.reset();
 		spiGyro.calibrate();
-		
+		cameraInit();
 	}
-
+	
+	public static void cameraInit() {
+		CameraServer cam0 = CameraServer.getInstance();
+        //CameraServer.getInstance().startAutomaticCapture();
+		cam0.setQuality(50);
+	}
+	
 	/**
 	 * This function is run once each time the robot enters autonomous mode
 	 */
@@ -54,7 +60,6 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		timer.reset();
 		timer.start();
-		
 	}
 
 	/**
