@@ -31,7 +31,7 @@ public class Robot extends IterativeRobot {
 	/* Gyro Systems */
 	ADXRS450_Gyro spiGyro = new ADXRS450_Gyro();
 	//AnalogGyro gyro = new AnalogGyro(1);
-	double Kp = 0.03*.35;					//Gyro converter constant
+	double Kp = 0.03*.35;					//Gyro converter constant (corrected)
 	
 	
 	/**
