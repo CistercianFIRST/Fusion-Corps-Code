@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.AnalogOutput;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -28,11 +29,10 @@ public class Robot extends IterativeRobot {
 	double speedLimitMove = 0.6;
 	double speedLimitRotate = -0.6;		// Has to be negative bc the joystick inverts l/r
 	
-	/* Gyro Systems */
+	/* Sensor Systems */
 	ADXRS450_Gyro spiGyro = new ADXRS450_Gyro();
-	//AnalogGyro gyro = new AnalogGyro(1);
 	double Kp = 0.03*.35;					//Gyro converter constant (corrected)
-	
+	AnalogOutput mySonar = new AnalogOutput(0);
 	
 	/**
 	 * This function is run when the robot is first started up and should 
@@ -45,10 +45,9 @@ public class Robot extends IterativeRobot {
 		cameraInit();
 	}
 	
-	public static void cameraInit() {
-		CameraServer cam0 = CameraServer.getInstance();
-        //CameraServer.getInstance().startAutomaticCapture();
-		cam0.setQuality(50);
+	// Camera SmartDashboard Display
+	public void cameraInit() {
+        CameraServer.getInstance().startAutomaticCapture();
 	}
 	
 	/**
@@ -93,8 +92,9 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void teleopPeriodic() {
+		// Joystick Speed Control
 		if(stick0.getRawButton(3)){
-			speedLimitMove = 0.4;
+			speedLimitMove = 0.5;
 		}
 		if(stick0.getRawButton(4)){
 			speedLimitMove = 0.6;
@@ -103,9 +103,33 @@ public class Robot extends IterativeRobot {
 			speedLimitMove = 0.8;
 		}
 		if(stick0.getRawButton(6)){
-			speedLimitMove = 1;
+			speedLimitMove = 1;	
 		}
-		 myRobot.arcadeDrive(stick0.getRawAxis(1)*speedLimitMove, stick0.getRawAxis(0)*speedLimitRotate);
+		//Turn 180 command
+		if(stick0.getPOV(0)==180){
+			double rotatedHeading = spiGyro.getAngle()+180;
+			while (spiGyro.getAngle()<rotatedHeading){
+				myRobot.drive(0, .5);
+				if (stick0.getRawButton(1)){
+					myRobot.drive(0, 0);
+					break;
+				}
+			}
+		}
+		boolean isSentient = false;
+		if(stick0.getRawButton(12)){
+			
+		}
+		while (isSentient==true){
+			skynetActivate();
+		}
+		System.out.println((mySonar.getVoltage()*1000)/5120);
+		
+		myRobot.arcadeDrive(stick0.getRawAxis(1)*speedLimitMove, stick0.getRawAxis(0)*speedLimitRotate);
+	}
+	
+	public void skynetActivate() {
+		System.out.println("I'll be back.");
 	}
 	
 	/**
