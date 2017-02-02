@@ -41,7 +41,6 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void robotInit() {
-		spiGyro.reset();
 		spiGyro.calibrate();
 		cameraInit();
 	}
@@ -60,6 +59,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		timer.reset();
 		timer.start();
+		spiGyro.reset();
 	}
 
 	/**
