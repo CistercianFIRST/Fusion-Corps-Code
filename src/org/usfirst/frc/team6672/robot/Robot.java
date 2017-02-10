@@ -142,6 +142,7 @@ public class Robot extends IterativeRobot {
 		myRobot.arcadeDrive(stick0.getRawAxis(1)*speedLimitMove, stick0.getRawAxis(0)*speedLimitRotate);
 	}
 	
+	
 	/**
 	 * This function is called periodically during test mode
 	 */
