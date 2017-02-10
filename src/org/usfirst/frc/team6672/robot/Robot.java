@@ -8,6 +8,10 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.AnalogOutput;
+import edu.wpi.first.wpilibj.vision.VisionThread;
+import edu.wpi.first.wpilibj.vision.VisionRunner;
+import edu.wpi.cscore.*;
+import edu.wpi.first.wpilibj.PWM;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -18,7 +22,7 @@ import edu.wpi.first.wpilibj.AnalogOutput;
  */
 
 public class Robot extends IterativeRobot {
-		
+	
 	RobotDrive myRobot = new RobotDrive(1, 0);
 	Timer timer = new Timer();
 	
@@ -34,6 +38,19 @@ public class Robot extends IterativeRobot {
 	double Kp = 0.03*.35;					//Gyro converter constant (corrected)
 	AnalogOutput mySonar = new AnalogOutput(0);
 	
+	/* Camera Variables */
+	//int IMG_WIDTH = 320;
+	//int IMG_HEIGHT = 240;
+	//private VisionThread visionThread;
+	//private double centerX = 0.0;
+	
+	/* PWM Stuff */
+	PWM motorLift = new PWM(2);
+	double speedMotorLift = 1.0;
+	
+	PWM motorGear = new PWM(3);
+	double speedMotorGear = 1.0;
+		
 	/**
 	 * This function is run when the robot is first started up and should 
 	 * used for any initialization code.
@@ -45,10 +62,8 @@ public class Robot extends IterativeRobot {
 		cameraInit();
 	}
 	
-	// Camera SmartDashboard Display
-	public void cameraInit() {
-        CameraServer.getInstance().startAutomaticCapture();
-	}
+	//Camera SmartDashboard Display
+
 	
 	/**
 	 * This function is run once each time the robot enters autonomous mode
@@ -92,7 +107,76 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void teleopPeriodic() {
-		// Joystick Speed Control
+		
+		if(stick0.getRawButton(1)){
+			motorLift.setRaw(255); // Towards back
+		}
+		/*if(!(stick0.getRawButton(1))){
+			motorLift.setRaw(0);
+		}*/
+		
+		if(stick0.getRawButton(2)){
+			motorLift.setRaw(-255); // Towards front
+		}
+		/*if(!(stick0.getRawButton(2))){
+			motorLift.setRaw(0);
+		}*/
+		speedControl();
+		//motorLift();
+		//motorGear();
+		
+		// Turn 180 command
+		if(stick0.getPOV(0)==180){
+			double rotatedHeading = spiGyro.getAngle()+180;
+			while (spiGyro.getAngle()<rotatedHeading){
+				myRobot.drive(0, .5);
+				if (stick0.getRawButton(1)){
+					myRobot.drive(0, 0);
+					break;
+				}
+			}
+		}
+		
+		System.out.println((mySonar.getVoltage()*1000)/5120);
+		
+		myRobot.arcadeDrive(stick0.getRawAxis(1)*speedLimitMove, stick0.getRawAxis(0)*speedLimitRotate);
+	}
+	
+	/**
+	 * This function is called periodically during test mode
+	 */
+	
+	@Override
+	public void testPeriodic() {
+		LiveWindow.run();
+	}	
+	
+	public void cameraInit() {
+        UsbCamera cam0 = CameraServer.getInstance().startAutomaticCapture();
+        //cam0.setResolution(IMG_WIDTH, IMG_HEIGHT);
+	}
+	
+	public void motorLift() {
+		if(stick0.getRawButton(11)){
+			motorLift.setSpeed(0.5);
+		}
+		if(!(stick0.getRawButton(11))){
+			motorLift.setSpeed(0);
+		}
+		
+		if(stick0.getRawButton(12)){
+			motorLift.setSpeed(-0.5);
+		}
+		if(!(stick0.getRawButton(12))){
+			motorLift.setSpeed(0);
+		}
+	}
+	
+	public void motorGear() {
+		
+	}
+	
+	public void speedControl() {
 		if(stick0.getRawButton(3)){
 			speedLimitMove = 0.5;
 		}
@@ -105,39 +189,5 @@ public class Robot extends IterativeRobot {
 		if(stick0.getRawButton(6)){
 			speedLimitMove = 1;	
 		}
-		//Turn 180 command
-		if(stick0.getPOV(0)==180){
-			double rotatedHeading = spiGyro.getAngle()+180;
-			while (spiGyro.getAngle()<rotatedHeading){
-				myRobot.drive(0, .5);
-				if (stick0.getRawButton(1)){
-					myRobot.drive(0, 0);
-					break;
-				}
-			}
-		}
-		boolean isSentient = false;
-		if(stick0.getRawButton(12)){
-			
-		}
-		while (isSentient==true){
-			skynetActivate();
-		}
-		System.out.println((mySonar.getVoltage()*1000)/5120);
-		
-		myRobot.arcadeDrive(stick0.getRawAxis(1)*speedLimitMove, stick0.getRawAxis(0)*speedLimitRotate);
-	}
-	
-	public void skynetActivate() {
-		System.out.println("I'll be back.");
-	}
-	
-	/**
-	 * This function is called periodically during test mode
-	 */
-	
-	@Override
-	public void testPeriodic() {
-		LiveWindow.run();
 	}
 }
