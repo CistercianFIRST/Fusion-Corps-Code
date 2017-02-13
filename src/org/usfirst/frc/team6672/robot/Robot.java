@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.vision.VisionThread;
 import edu.wpi.first.wpilibj.vision.VisionRunner;
 import edu.wpi.cscore.*;
 import edu.wpi.first.wpilibj.PWM;
+import edu.wpi.first.wpilibj.Spark;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -45,11 +47,9 @@ public class Robot extends IterativeRobot {
 	//private double centerX = 0.0;
 	
 	/* PWM Stuff */
-	PWM motorLift = new PWM(2);
-	double speedMotorLift = 1.0;
+	Spark motorLift = new Spark(2);
 	
-	PWM motorGear = new PWM(3);
-	double speedMotorGear = 1.0;
+	Spark motorGear = new Spark(3);
 		
 	/**
 	 * This function is run when the robot is first started up and should 
@@ -60,8 +60,9 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		spiGyro.calibrate();
 		cameraInit();
+		motorLift.enableDeadbandElimination(true);
 	}
-	
+
 	//Camera SmartDashboard Display
 
 	
@@ -108,29 +109,16 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		
-		if(stick0.getRawButton(1)){
-			motorLift.setRaw(255); // Towards back
-		}
-		/*if(!(stick0.getRawButton(1))){
-			motorLift.setRaw(0);
-		}*/
-		
-		if(stick0.getRawButton(2)){
-			motorLift.setRaw(-255); // Towards front
-		}
-		/*if(!(stick0.getRawButton(2))){
-			motorLift.setRaw(0);
-		}*/
 		speedControl();
-		//motorLift();
-		//motorGear();
+		motorLift();
+		motorGear();
 		
 		// Turn 180 command
 		if(stick0.getPOV(0)==180){
 			double rotatedHeading = spiGyro.getAngle()+180;
 			while (spiGyro.getAngle()<rotatedHeading){
 				myRobot.drive(0, .5);
-				if (stick0.getRawButton(1)){
+				if (stick0.getPOV(0)==0){
 					myRobot.drive(0, 0);
 					break;
 				}
@@ -153,28 +141,29 @@ public class Robot extends IterativeRobot {
 	}	
 	
 	public void cameraInit() {
-        UsbCamera cam0 = CameraServer.getInstance().startAutomaticCapture();
+        CameraServer.getInstance().startAutomaticCapture();
         //cam0.setResolution(IMG_WIDTH, IMG_HEIGHT);
 	}
 	
 	public void motorLift() {
-		if(stick0.getRawButton(11)){
-			motorLift.setSpeed(0.5);
-		}
-		if(!(stick0.getRawButton(11))){
-			motorLift.setSpeed(0);
-		}
-		
 		if(stick0.getRawButton(12)){
-			motorLift.setSpeed(-0.5);
+			motorLift.setSpeed(-0.8); // Towards forward
 		}
 		if(!(stick0.getRawButton(12))){
-			motorLift.setSpeed(0);
+			motorLift.setSpeed(0.0);
 		}
 	}
 	
 	public void motorGear() {
-		
+		if(stick0.getRawButton(1)){
+			motorGear.setSpeed(0.8); // Towards back
+		}
+		if(stick0.getRawButton(2)){
+			motorGear.setSpeed(-0.8); // Towards back
+		}
+		if(stick0.getRawButton(1)==(stick0.getRawButton(2))) {
+			motorGear.setSpeed(0.0); // Towards back
+		}
 	}
 	
 	public void speedControl() {
