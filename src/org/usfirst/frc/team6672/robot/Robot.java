@@ -8,9 +8,6 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.AnalogOutput;
-import edu.wpi.first.wpilibj.vision.VisionThread;
-import edu.wpi.first.wpilibj.vision.VisionRunner;
-import edu.wpi.cscore.*;
 import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.Spark;
 
@@ -141,7 +138,7 @@ public class Robot extends IterativeRobot {
 	}	
 	
 	public void cameraInit() {
-        CameraServer.getInstance().startAutomaticCapture();
+        CameraServer.getInstance();
         //cam0.setResolution(IMG_WIDTH, IMG_HEIGHT);
 	}
 	
