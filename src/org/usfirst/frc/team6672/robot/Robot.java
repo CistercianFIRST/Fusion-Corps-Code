@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.AnalogOutput;
-import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.Spark;
 
 
@@ -55,9 +55,11 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void robotInit() {
+		System.out.println("Initiating...");
 		spiGyro.calibrate();
 		cameraInit();
 		motorLift.enableDeadbandElimination(true);
+		System.out.println("Initialized.");
 	}
 
 	//Camera SmartDashboard Display
@@ -138,7 +140,7 @@ public class Robot extends IterativeRobot {
 	}	
 	
 	public void cameraInit() {
-        CameraServer.getInstance();
+        CameraServer.getInstance().startAutomaticCapture().setResolution(1280, 720);
         //cam0.setResolution(IMG_WIDTH, IMG_HEIGHT);
 	}
 	
@@ -153,10 +155,10 @@ public class Robot extends IterativeRobot {
 	
 	public void motorGear() {
 		if(stick0.getRawButton(1)){
-			motorGear.setSpeed(0.8); // Towards back
+			motorGear.setSpeed(-0.8); // Open gear holder
 		}
 		if(stick0.getRawButton(2)){
-			motorGear.setSpeed(-0.8); // Towards back
+			motorGear.setSpeed(0.8); // Close gear holder
 		}
 		if(stick0.getRawButton(1)==(stick0.getRawButton(2))) {
 			motorGear.setSpeed(0.0); // Towards back
