@@ -56,6 +56,8 @@ public class Robot extends IterativeRobot {
 		cameraInit();
 		motorLift.enableDeadbandElimination(true);
 		System.out.println("Initialized.");
+		System.out.println("POV input is " + stick0.getPOV(0));
+		System.out.println("The number of POV's is " + stick0.getPOVCount());
 	}
 
 	//Camera SmartDashboard Display
@@ -110,7 +112,7 @@ public class Robot extends IterativeRobot {
 		
 		// Turn 180 command
 		if(stick0.getPOV(0)==180){
-			System.out.println(stick0.getPOV(0));
+			System.out.println("POV input is " + stick0.getPOV(0));
 			double rotatedHeading = spiGyro.getAngle()+180;
 			while (spiGyro.getAngle()<rotatedHeading){
 				myRobot.drive(0, .5);
