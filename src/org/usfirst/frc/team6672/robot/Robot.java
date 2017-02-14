@@ -59,7 +59,6 @@ public class Robot extends IterativeRobot {
 		System.out.println("Initialized.");
 		System.out.println("POV input is " + stick0.getPOV(0));
 		System.out.println("The number of POV's is " + stick0.getPOVCount());
-		SmartDashboard.putNumber("POV status:", stick0.getPOV(0));
 	}
 
 	//Camera SmartDashboard Display
