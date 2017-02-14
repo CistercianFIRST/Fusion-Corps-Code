@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Spark;
@@ -58,6 +59,7 @@ public class Robot extends IterativeRobot {
 		System.out.println("Initialized.");
 		System.out.println("POV input is " + stick0.getPOV(0));
 		System.out.println("The number of POV's is " + stick0.getPOVCount());
+		SmartDashboard.putNumber("POV status:", stick0.getPOV(0));
 	}
 
 	//Camera SmartDashboard Display
