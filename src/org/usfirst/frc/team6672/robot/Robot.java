@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.Spark;
 
 public class Robot extends IterativeRobot {
 	
+	/** Inital Variables **/
+
 	RobotDrive myRobot = new RobotDrive(1, 0);
 	Timer timer = new Timer();
 	
@@ -33,13 +35,7 @@ public class Robot extends IterativeRobot {
 	
 	/* Sensor Systems */
 	ADXRS450_Gyro spiGyro = new ADXRS450_Gyro();
-	double Kp = 0.03*.35;					//Gyro converter constant (corrected)
-	
-	/* Camera Variables */
-	//int IMG_WIDTH = 320;
-	//int IMG_HEIGHT = 240;
-	//private VisionThread visionThread;
-	//private double centerX = 0.0;
+	double Kp = 0.03*.35;				//Gyro converter constant (corrected)
 	
 	/* PWM Stuff */
 	Spark motorLift = new Spark(2);
@@ -52,17 +48,13 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void robotInit() {
-		System.out.println("Initiating...");
+		System.out.println("[  STATUS  ] Initiating...");
 		spiGyro.calibrate();
 		cameraInit();
-		motorLift.enableDeadbandElimination(true);
-		System.out.println("Initialized.");
-		System.out.println("POV input is " + stick0.getPOV(0));
+		System.out.println("[  STATUS  ] Initialized.");
+		System.out.println("[ POV input is " + stick0.getPOV(0));
 		System.out.println("The number of POV's is " + stick0.getPOVCount());
 	}
-
-	//Camera SmartDashboard Display
-
 	
 	/**
 	 * This function is run once each time the robot enters autonomous mode
@@ -85,7 +77,7 @@ public class Robot extends IterativeRobot {
 			double angle = spiGyro.getAngle();
 			myRobot.drive(-0.4, angle*Kp);	// drive forwards half speed, and correct heading with gyro
 			
-			System.out.println(spiGyro.getAngle());
+			System.out.println("[GYRO ANGLE] " + spiGyro.getAngle());
 		} else {
 			myRobot.drive(0.0, 0.0);		// stop robot
 		}
@@ -108,21 +100,10 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		
 		speedControl();
+		speedControlRotate();
 		motorLift();
 		motorGear();
-		
-		// Turn 180 command
-		if(stick0.getPOV(0)==180){
-			System.out.println("POV input is " + stick0.getPOV(0));
-			double rotatedHeading = spiGyro.getAngle()+180;
-			while (spiGyro.getAngle()<rotatedHeading){
-				myRobot.drive(0, .5);
-				if (stick0.getPOV(0)==0){
-					myRobot.drive(0, 0);
-					break;
-				}
-			}
-		}
+		oneEighty();
 
 		myRobot.arcadeDrive(stick0.getRawAxis(1)*speedLimitMove, stick0.getRawAxis(0)*speedLimitRotate);
 	}
@@ -134,12 +115,11 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void testPeriodic() {
-		LiveWindow.run();
 	}	
 	
 	public void cameraInit() {
-        CameraServer.getInstance().startAutomaticCapture().setResolution(1024, 576);
-        //cam0.setResolution(IMG_WIDTH, IMG_HEIGHT);
+        CameraServer.getInstance().startAutomaticCapture("FrontCamera", 0).setResolution(682, 384);
+        CameraServer.getInstance().startAutomaticCapture("BackCamera", 1).setResolution(682, 384);
 	}
 	
 	public void motorLift() {
@@ -190,6 +170,20 @@ public class Robot extends IterativeRobot {
 		}
 		if(stick0.getRawButton(10)){
 			speedLimitRotate = -1;	
+		}
+	}
+	
+	public void oneEighty() {
+		if(stick0.getPOV(0)==180){
+			double rotatedHeading = spiGyro.getAngle()+180;
+			while(spiGyro.getAngle()<rotatedHeading){
+				System.out.println("[GYRO ANGLE] " + spiGyro.getAngle());
+				myRobot.arcadeDrive(0, -(speedLimitRotate));
+				if (stick0.getPOV(0)==0){
+					myRobot.drive(0, 0);
+					break;
+				}
+			}
 		}
 	}
 }
