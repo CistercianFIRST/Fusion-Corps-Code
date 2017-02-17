@@ -118,8 +118,8 @@ public class Robot extends IterativeRobot {
 	}	
 	
 	public void cameraInit() {
-        CameraServer.getInstance().startAutomaticCapture("Back Camera", 0).setResolution(1024, 576);
-        CameraServer.getInstance().startAutomaticCapture("Front Camera", 1).setResolution(1024, 576);
+        CameraServer.getInstance().startAutomaticCapture("Back Camera", 0).setResolution(512, 288);
+        CameraServer.getInstance().startAutomaticCapture("Front Camera", 1).setResolution(512, 288);
 	}
 	
 	public void motorLift() {
@@ -132,15 +132,37 @@ public class Robot extends IterativeRobot {
 	}
 	
 	public void motorGear() {
-		if(stick0.getRawButton(1)){
-			motorGear.setSpeed(-1.0); // Open gear holder
+		if(stick0.getRawButton(11)) {
+			if(stick0.getRawButton(1)){
+				motorGear.setSpeed(-1.0); // Open gear holder
+			}
+			if(stick0.getRawButton(2)){
+				motorGear.setSpeed(1.0); // Close gear holder
+			}
+			if(stick0.getRawButton(1)==(stick0.getRawButton(2))) {
+				motorGear.setSpeed(0.0); // Stop gear holder
+			}
 		}
-		if(stick0.getRawButton(2)){
-			motorGear.setSpeed(1.0); // Close gear holder
+		if(!(stick0.getRawButton(11))) {
+			if(stick0.getRawButton(1)){
+				timer.reset();
+				timer.start();
+				while(timer.get()<1.5){
+					motorGear.setSpeed(-1.0);
+				}
+			}
+			if(stick0.getRawButton(2)) {
+				timer.reset();
+				timer.start();
+				while(timer.get()<1.25){
+					motorGear.setSpeed(1.0);
+				}
+			}
+			if(stick0.getRawButton(1)==(stick0.getRawButton(2))) {
+				motorGear.setSpeed(0.0);
+			}
 		}
-		if(stick0.getRawButton(1)==(stick0.getRawButton(2))) {
-			motorGear.setSpeed(0.0); // Stop gear holder
-		}
+
 	}
 	
 	public void speedControl() {
@@ -178,7 +200,7 @@ public class Robot extends IterativeRobot {
 			double rotatedHeading = spiGyro.getAngle()+180;
 			while(spiGyro.getAngle()<rotatedHeading){
 				System.out.println("[GYRO ANGLE] " + spiGyro.getAngle());
-				myRobot.arcadeDrive(0, -(speedLimitRotate));
+				myRobot.arcadeDrive(0, speedLimitRotate);
 				if (stick0.getPOV(0)==0){
 					myRobot.drive(0, 0);
 					break;
