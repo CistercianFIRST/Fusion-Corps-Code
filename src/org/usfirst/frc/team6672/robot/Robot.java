@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 
 /**
@@ -36,6 +37,7 @@ public class Robot extends IterativeRobot {
 	/* Sensor Systems */
 	ADXRS450_Gyro spiGyro = new ADXRS450_Gyro();
 	double Kp = 0.03*.35;				//Gyro converter constant (corrected)
+	DigitalInput motorGearSensor = new DigitalInput(0);
 	
 	/* PWM Stuff */
 	Spark motorLift = new Spark(2);
@@ -152,9 +154,8 @@ public class Robot extends IterativeRobot {
 				}
 			}
 			if(stick0.getRawButton(2)) {
-				timer.reset();
-				timer.start();
-				while(timer.get()<1.25){
+				//while(timer.get()<1.25){
+				while(motorGearSensor.get()==false){
 					motorGear.setSpeed(1.0);
 				}
 			}
