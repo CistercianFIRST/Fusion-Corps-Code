@@ -73,7 +73,7 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void autonomousPeriodic() {
-		if (timer.get() < 5.0) {
+		if (timer.get() < 3.0) {
 			double angle = spiGyro.getAngle();
 			myRobot.drive(-0.4, angle*Kp);	// drive forwards half speed, and correct heading with gyro
 			
@@ -118,7 +118,7 @@ public class Robot extends IterativeRobot {
 	}	
 	
 	public void cameraInit() {
-        CameraServer.getInstance().startAutomaticCapture("Back Camera", 0).setResolution(512, 288);
+        CameraServer.getInstance().startAutomaticCapture("Back Camera", 0).setResolution(320, 240);
         CameraServer.getInstance().startAutomaticCapture("Front Camera", 1).setResolution(512, 288);
 	}
 	
@@ -188,7 +188,7 @@ public class Robot extends IterativeRobot {
 			speedLimitRotate= -0.6;
 		}
 		if(stick0.getRawButton(9)){
-			speedLimitRotate = -0.8;
+			speedLimitRotate = -0.7;
 		}
 		if(stick0.getRawButton(10)){
 			speedLimitRotate = -1;	
