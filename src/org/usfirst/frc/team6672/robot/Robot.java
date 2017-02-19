@@ -25,10 +25,21 @@ public class Robot extends IterativeRobot {
 
 	RobotDrive myRobot = new RobotDrive(1, 0);
 	Timer timer = new Timer();
-	int testVariable = 1;
 	
 	/* Joystick stuff */
 	Joystick stick0 = new Joystick(0);
+	int stick0POV = -1;
+	double stick0Axis1 = 0;
+	double stick0Axis2 = 0;
+	double stick0Axis3 = 0;
+	double stick0Axis4 = 0;
+	boolean stick0Button1 = false;
+	boolean stick0Button2 = false;
+	boolean stick0Button3 = false;
+	boolean stick0Button4 = false;
+	boolean stick0Button5 = false;
+	boolean stick0Button6 = false;
+	boolean stick0Button7 = false;
 
 	/* Speed Control System */
 	double speedLimitMove = 0.6;
@@ -77,7 +88,7 @@ public class Robot extends IterativeRobot {
 		if (timer.get() < 3.0) {
 			double angle = spiGyro.getAngle();
 			myRobot.drive(-0.4, angle*Kp);	// drive forwards half speed, and correct heading with gyro
-			
+
 			System.out.println("[GYRO ANGLE] " + spiGyro.getAngle());
 		} else {
 			myRobot.drive(0.0, 0.0);		// stop robot
@@ -100,13 +111,28 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		
+		stick0POV = stick0.getPOV(0);
+		stick0Axis1 = stick0.getRawAxis(1);
+		stick0Axis2 = stick0.getRawAxis(2);
+		stick0Axis3 = stick0.getRawAxis(3);
+		stick0Axis4 = stick0.getRawAxis(4);
+		stick0Button1 = stick0.getRawButton(1);
+		stick0Button2 = stick0.getRawButton(2);
+		stick0Button3 = stick0.getRawButton(3);
+		stick0Button4 = stick0.getRawButton(4);
+		stick0Button5 = stick0.getRawButton(5);
+		stick0Button6 = stick0.getRawButton(6);
+		stick0Button7 = stick0.getRawButton(7);
+		
 		speedControl();
 		speedControlRotate();
 		motorLift();
 		motorGear();
 		oneEighty();
 
-		myRobot.arcadeDrive(stick0.getRawAxis(1)*speedLimitMove, stick0.getRawAxis(0)*speedLimitRotate);
+		
+		
+		myRobot.arcadeDrive(stick0Axis1*speedLimitMove, stick0Axis4*speedLimitRotate);
 	}
 	
 	
@@ -124,42 +150,42 @@ public class Robot extends IterativeRobot {
 	}
 	
 	public void motorLift() {
-		if(stick0.getRawButton(12)){
+		if(stick0Button4){
 			motorLift.setSpeed(-1.0); // Towards forward
 		}
-		if(!(stick0.getRawButton(12))){
+		if(!(stick0Button4)){
 			motorLift.setSpeed(0.0);
 		}
 	}
 	
 	public void motorGear() {
-		if(stick0.getRawButton(11)) {
-			if(stick0.getRawButton(1)){
+		if(stick0Button7) {
+			if(stick0Axis3>0.5){
 				motorGear.setSpeed(-1.0); // Open gear holder
 			}
-			if(stick0.getRawButton(2)){
+			if(stick0Axis2>0.5){
 				motorGear.setSpeed(1.0); // Close gear holder
 			}
-			if(stick0.getRawButton(1)==(stick0.getRawButton(2))) {
+			if(stick0Axis3<=0.5 && stick0Axis2<=0.5) {
 				motorGear.setSpeed(0.0); // Stop gear holder
 			}
 		}
-		if(!(stick0.getRawButton(11))) {
-			if(stick0.getRawButton(1)){
+		if(!(stick0Button7)) {
+			if(stick0Axis3>0.5){
 				timer.reset();
 				timer.start();
 				while(timer.get()<1.5){
 					motorGear.setSpeed(-1.0);
 				}
 			}
-			if(stick0.getRawButton(2)) {
+			if(stick0Axis3>0.5) {
 				timer.reset();
 				timer.start();
 				while(timer.get()<1.25){
 					motorGear.setSpeed(1.0);
 				}
 			}
-			if(stick0.getRawButton(1)==(stick0.getRawButton(2))) {
+			if(stick0Axis3<=0.5 && stick0Axis2<=0.5) {
 				motorGear.setSpeed(0.0);
 			}
 		}
@@ -167,42 +193,32 @@ public class Robot extends IterativeRobot {
 	}
 	
 	public void speedControl() {
-		if(stick0.getRawButton(3)){
-			speedLimitMove = 0.5;
-		}
-		if(stick0.getRawButton(4)){
-			speedLimitMove = 0.6;
-		}
-		if(stick0.getRawButton(5)){
+		if(stick0Button5){
 			speedLimitMove = 0.8;
 		}
-		if(stick0.getRawButton(6)){
+		if(stick0Button6){
 			speedLimitMove = 1;	
 		}
 	}
 	
 	public void speedControlRotate() {
-		if(stick0.getRawButton(7)){
-			speedLimitRotate = -0.5;
-		}
-		if(stick0.getRawButton(8)){
+		if(stick0Button3){
 			speedLimitRotate= -0.6;
 		}
-		if(stick0.getRawButton(9)){
+		if(stick0Button2){
 			speedLimitRotate = -0.7;
 		}
-		if(stick0.getRawButton(10)){
+		if(stick0Button1){
 			speedLimitRotate = -1;	
 		}
 	}
 	
 	public void oneEighty() {
-		if(stick0.getPOV(0)==180){
+		if(stick0POV==180){
 			double rotatedHeading = spiGyro.getAngle()+180;
 			while(spiGyro.getAngle()<rotatedHeading){
-				System.out.println("[GYRO ANGLE] " + spiGyro.getAngle());
 				myRobot.arcadeDrive(0, speedLimitRotate);
-				if (stick0.getPOV(0)==0){
+				if (stick0POV==0){
 					myRobot.drive(0, 0);
 					break;
 				}
