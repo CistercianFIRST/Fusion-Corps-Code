@@ -64,8 +64,6 @@ public class Robot extends IterativeRobot {
 		spiGyro.calibrate();
 		cameraInit();
 		System.out.println("[  STATUS  ] Initialized.");
-		System.out.println("[ POV input is " + stick0.getPOV(0));
-		System.out.println("The number of POV's is " + stick0.getPOVCount());
 	}
 	
 	/**
