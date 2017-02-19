@@ -88,8 +88,6 @@ public class Robot extends IterativeRobot {
 		if (timer.get() < 3.0) {
 			double angle = spiGyro.getAngle();
 			myRobot.drive(-0.4, angle*Kp);	// drive forwards half speed, and correct heading with gyro
-
-			System.out.println("[GYRO ANGLE] " + spiGyro.getAngle());
 		} else {
 			myRobot.drive(0.0, 0.0);		// stop robot
 		}
