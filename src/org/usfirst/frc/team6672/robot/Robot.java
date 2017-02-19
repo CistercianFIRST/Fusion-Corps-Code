@@ -25,6 +25,7 @@ public class Robot extends IterativeRobot {
 
 	RobotDrive myRobot = new RobotDrive(1, 0);
 	Timer timer = new Timer();
+	int testVariable = 1;
 	
 	/* Joystick stuff */
 	Joystick stick0 = new Joystick(0);
