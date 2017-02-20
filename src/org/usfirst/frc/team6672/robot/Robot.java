@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Spark;
 
 
@@ -52,6 +53,7 @@ public class Robot extends IterativeRobot {
 	/* PWM Stuff */
 	Spark motorLift = new Spark(2);
 	Spark motorGear = new Spark(3);
+	int dSLocation = DriverStation.getInstance().getLocation();
 		
 	/**
 	 * This function is run when the robot is first started up and should 
@@ -83,11 +85,24 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void autonomousPeriodic() {
-		if (timer.get() < 3.0) {
-			double angle = spiGyro.getAngle();
-			myRobot.drive(-0.4, angle*Kp);	// drive forwards half speed, and correct heading with gyro
-		} else {
-			myRobot.drive(0.0, 0.0);		// stop robot
+		if(dSLocation == 2){
+			if (timer.get() < 3.0) {
+				double angle = spiGyro.getAngle();
+				myRobot.drive(-0.4, angle*Kp);	// drive forwards half speed, and correct heading with gyro				
+			}
+			else {
+				myRobot.drive(0.0, 0.0);		// stop robot
+			}
+		}
+		
+		else if(dSLocation == (1|3)){
+			if (timer.get() < 5.0) {
+				double angle = spiGyro.getAngle();
+				myRobot.drive(-0.4, angle*Kp);	// drive forwards half speed, and correct heading with gyro				
+			}
+			else {
+				myRobot.drive(0.0, 0.0);		// stop robot
+			}
 		}
 	}	
 	
@@ -174,7 +189,7 @@ public class Robot extends IterativeRobot {
 					motorGear.setSpeed(-1.0);
 				}
 			}
-			if(stick0Axis3>0.5) {
+			if(stick0Axis2>0.5) {
 				timer.reset();
 				timer.start();
 				while(timer.get()<1.25){
