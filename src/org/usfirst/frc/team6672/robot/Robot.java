@@ -132,7 +132,7 @@ public class Robot extends IterativeRobot {
 	
 	public void cameraInit() {
         CameraServer.getInstance().startAutomaticCapture("Back Camera", 0).setResolution(320, 240);
-        CameraServer.getInstance().startAutomaticCapture("Front Camera", 1).setResolution(512, 288);
+        CameraServer.getInstance().startAutomaticCapture("Front Camera", 1).setResolution(320, 240);
 	}
 	
 	public void motorLift() {
