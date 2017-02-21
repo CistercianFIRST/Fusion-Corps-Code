@@ -156,8 +156,8 @@ public class Robot extends IterativeRobot {
 	}	
 	
 	public void cameraInit() {
-        CameraServer.getInstance().startAutomaticCapture("Back Camera", 0).setResolution(320, 240);
-        CameraServer.getInstance().startAutomaticCapture("Front Camera", 1).setResolution(320, 240);
+        CameraServer.getInstance().startAutomaticCapture("Back Camera", 0).setResolution(128, 72);
+        CameraServer.getInstance().startAutomaticCapture("Front Camera", 1).setResolution(256, 144);
 	}
 	
 	public void motorLift() {
@@ -230,7 +230,7 @@ public class Robot extends IterativeRobot {
 			while(spiGyro.getAngle()<rotatedHeading){
 				myRobot.arcadeDrive(0, speedLimitRotate);
 				if (stick0POV==0){
-					myRobot.drive(0, 0);
+					myRobot.arcadeDrive(0, 0);
 					break;
 				}
 			}
