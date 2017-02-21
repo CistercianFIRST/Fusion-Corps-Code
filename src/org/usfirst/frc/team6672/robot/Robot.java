@@ -43,8 +43,8 @@ public class Robot extends IterativeRobot {
 	boolean stick0Button7 = false;
 
 	/* Speed Control System */
-	double speedLimitMove = 0.6;
-	double speedLimitRotate = -0.5;		// Has to be negative bc the joystick inverts l/r
+	double speedLimitMove = 0.8;
+	double speedLimitRotate = -0.6;		// Has to be negative bc the joystick inverts l/r
 	
 	/* Sensor Systems */
 	ADXRS450_Gyro spiGyro = new ADXRS450_Gyro();
@@ -229,7 +229,7 @@ public class Robot extends IterativeRobot {
 			double rotatedHeading = spiGyro.getAngle()+180;
 			while(spiGyro.getAngle()<rotatedHeading){
 				myRobot.arcadeDrive(0, speedLimitRotate);
-				if (stick0POV==0){
+				if (stick0.getPOV(0)==0){
 					myRobot.arcadeDrive(0, 0);
 					break;
 				}
