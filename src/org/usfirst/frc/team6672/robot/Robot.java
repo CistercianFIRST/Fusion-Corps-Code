@@ -23,6 +23,7 @@ public class Robot extends IterativeRobot {
 
 	RobotDrive myRobot = new RobotDrive(1, 0);
 	Timer timer = new Timer();
+	Timer timerTwo = new Timer();
 	
 	/* Joystick stuff */
 	Joystick stick0 = new Joystick(0);
@@ -83,7 +84,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		DriverStation.reportError("[   MODE   ] Autonomous...", true);
-		System.out.print("[  STATUS  ] dSLocation: " + "dSLocation");
+		System.out.print("[  STATUS  ] dSLocation: " + dSLocation);
 		if(dSLocation == 2){
 			if (timer.get() < 3.0) {
 				double angle = spiGyro.getAngle();
@@ -146,6 +147,7 @@ public class Robot extends IterativeRobot {
 		motorLift();
 		motorGear();
 		//oneEighty();
+		backUp();
 		
 		myRobot.arcadeDrive(stick0Axis1*speedLimitMove, stick0Axis4*speedLimitRotate);
 	}
@@ -227,15 +229,25 @@ public class Robot extends IterativeRobot {
 		}
 	}
 	
-	public void oneEighty() {
+//	public void oneEighty() {
+//		if(stick0POV==180){
+//			double rotatedHeading = spiGyro.getAngle()+180;
+//			while(spiGyro.getAngle()<rotatedHeading){
+//				myRobot.arcadeDrive(0, speedLimitRotate);
+//				if (stick0.getPOV(0)==0){
+//					myRobot.arcadeDrive(0, 0);
+//					break;
+//				}
+//			}
+//		}
+//	}
+	
+	public void backUp() {
 		if(stick0POV==180){
-			double rotatedHeading = spiGyro.getAngle()+180;
-			while(spiGyro.getAngle()<rotatedHeading){
-				myRobot.arcadeDrive(0, speedLimitRotate);
-				if (stick0.getPOV(0)==0){
-					myRobot.arcadeDrive(0, 0);
-					break;
-				}
+			timerTwo.reset();
+			timerTwo.start();
+			while(timerTwo.get()<0.2){
+				myRobot.arcadeDrive(-0.8, 0);
 			}
 		}
 	}
