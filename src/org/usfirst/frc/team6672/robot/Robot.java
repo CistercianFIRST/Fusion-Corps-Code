@@ -4,13 +4,10 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Spark;
-
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -54,7 +51,7 @@ public class Robot extends IterativeRobot {
 	Spark motorLift = new Spark(2);
 	Spark motorGear = new Spark(3);
 	int dSLocation = DriverStation.getInstance().getLocation();
-		
+	
 	/**
 	 * This function is run when the robot is first started up and should 
 	 * used for any initialization code.
@@ -85,6 +82,8 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void autonomousPeriodic() {
+		DriverStation.reportError("[   MODE   ] Autonomous...", true);
+		System.out.print("[  STATUS  ] dSLocation: " + "dSLocation");
 		if(dSLocation == 2){
 			if (timer.get() < 3.0) {
 				double angle = spiGyro.getAngle();
@@ -104,7 +103,11 @@ public class Robot extends IterativeRobot {
 				myRobot.drive(0.0, 0.0);		// stop robot
 			}
 		}
-	}	
+		else {
+			myRobot.drive(0.0, 0.0);
+		}
+	}
+	
 	
 	/**
 	 * This function is called once each time the robot enters tele-operated
@@ -113,6 +116,8 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void teleopInit() {
+		timer.reset();
+		timer.start();
 	}
 
 	/**
@@ -121,6 +126,7 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void teleopPeriodic() {
+		DriverStation.reportError("[   MODE   ] Teleop...", true);
 		
 		stick0POV = stick0.getPOV(0);
 		stick0Axis1 = stick0.getRawAxis(1);
@@ -139,9 +145,7 @@ public class Robot extends IterativeRobot {
 		speedControlRotate();
 		motorLift();
 		motorGear();
-		oneEighty();
-
-		
+		//oneEighty();
 		
 		myRobot.arcadeDrive(stick0Axis1*speedLimitMove, stick0Axis4*speedLimitRotate);
 	}
@@ -200,7 +204,6 @@ public class Robot extends IterativeRobot {
 				motorGear.setSpeed(0.0);
 			}
 		}
-
 	}
 	
 	public void speedControl() {
