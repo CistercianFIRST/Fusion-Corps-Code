@@ -24,7 +24,7 @@ public class Robot extends IterativeRobot {
 	RobotDrive myRobot = new RobotDrive(1, 0);
 	Timer timer = new Timer();
 	Timer timerTwo = new Timer();
-	
+
 	/* Joystick stuff */
 	Joystick stick0 = new Joystick(0);
 	int stick0POV = -1;
@@ -94,7 +94,7 @@ public class Robot extends IterativeRobot {
 			myRobot.drive(0.0, 0.0);
 		}
 	}
-	
+
 //		if(dSLocation == 2){
 //			if (timer.get() < 3.0) {
 //				double angle = spiGyro.getAngle();
@@ -201,14 +201,14 @@ public class Robot extends IterativeRobot {
 			if(stick0Axis3>0.5){
 				timer.reset();
 				timer.start();
-				while(timer.get()<1.5){
+				if(timer.get()<1.5){
 					motorGear.setSpeed(-1.0);
 				}
 			}
 			if(stick0Axis2>0.5) {
 				timer.reset();
 				timer.start();
-				while(timer.get()<1.25){
+				if(timer.get()<1.25){
 					motorGear.setSpeed(1.0);
 				}
 			}
