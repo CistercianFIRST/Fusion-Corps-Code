@@ -51,7 +51,6 @@ public class Robot extends IterativeRobot {
 	/* PWM Stuff */
 	Spark motorLift = new Spark(2);
 	Spark motorGear = new Spark(3);
-//	int dSLocation = DriverStation.getInstance().getLocation();
 	
 	/**
 	 * This function is run when the robot is first started up and should 
@@ -84,7 +83,6 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		DriverStation.reportError("[   MODE   ] Autonomous...", true);
-//		System.out.print("[  STATUS  ] dSLocation: " + dSLocation); 
 		
 		if(timer.get() < 3.0) {
 			double angle = spiGyro.getAngle();
@@ -94,31 +92,6 @@ public class Robot extends IterativeRobot {
 			myRobot.drive(0.0, 0.0);
 		}
 	}
-
-//		if(dSLocation == 2){
-//			if (timer.get() < 3.0) {
-//				double angle = spiGyro.getAngle();
-//				myRobot.drive(-0.4, angle*Kp);	// drive forwards half speed, and correct heading with gyro				
-//			}
-//			else {
-//				myRobot.drive(0.0, 0.0);		// stop robot
-//			}
-//		}
-//		
-//		else if(dSLocation == (1|3)){
-//			if (timer.get() < 5.0) {
-//				double angle = spiGyro.getAngle();
-//				myRobot.drive(-0.4, angle*Kp);	// drive forwards half speed, and correct heading with gyro				
-//			}
-//			else {
-//				myRobot.drive(0.0, 0.0);		// stop robot
-//			}
-//		}
-//		else {
-//			myRobot.drive(0.0, 0.0);
-//		}
-//	}
-	
 	
 	/**
 	 * This function is called once each time the robot enters tele-operated
@@ -156,8 +129,6 @@ public class Robot extends IterativeRobot {
 		speedControlRotate();
 		motorLift();
 		motorGear();
-		//oneEighty();
-		//backUp();
 		
 		myRobot.arcadeDrive(stick0Axis1*speedLimitMove, stick0Axis4*speedLimitRotate);
 	}
@@ -238,27 +209,4 @@ public class Robot extends IterativeRobot {
 			speedLimitRotate = -1;	
 		}
 	}
-	
-//	public void oneEighty() {
-//		if(stick0POV==180){
-//			double rotatedHeading = spiGyro.getAngle()+180;
-//			while(spiGyro.getAngle()<rotatedHeading){
-//				myRobot.arcadeDrive(0, speedLimitRotate);
-//				if (stick0.getPOV(0)==0){
-//					myRobot.arcadeDrive(0, 0);
-//					break;
-//				}
-//			}
-//		}
-//	}
-	
-//	public void backUp() {
-//		if(stick0POV==180){
-//			timerTwo.reset();
-//			timerTwo.start();
-//			while(timerTwo.get()<0.2){
-//				myRobot.arcadeDrive(-0.8, 0);
-//			}
-//		}
-//	}
 }
