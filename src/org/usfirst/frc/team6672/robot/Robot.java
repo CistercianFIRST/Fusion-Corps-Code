@@ -23,7 +23,6 @@ public class Robot extends IterativeRobot {
 
 	RobotDrive myRobot = new RobotDrive(1, 0);
 	Timer timer = new Timer();
-	Timer timerTwo = new Timer();
 
 	/* Joystick stuff */
 	Joystick stick0 = new Joystick(0);
