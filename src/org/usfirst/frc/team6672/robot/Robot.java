@@ -41,8 +41,8 @@ public class Robot extends IterativeRobot {
 	boolean stick0Button7 = false;
 
 	/* Speed Control System */
-	double speedLimitMove = 0.8;
-	double speedLimitRotate = -0.6;		// Has to be negative bc the joystick inverts l/r
+	double speedLimitMove = 1.0;
+	double speedLimitRotate = -0.7;		// Has to be negative bc the joystick inverts l/r
 	
 	/* Sensor Systems */
 	ADXRS450_Gyro spiGyro = new ADXRS450_Gyro();
@@ -51,7 +51,7 @@ public class Robot extends IterativeRobot {
 	/* PWM Stuff */
 	Spark motorLift = new Spark(2);
 	Spark motorGear = new Spark(3);
-	int dSLocation = DriverStation.getInstance().getLocation();
+//	int dSLocation = DriverStation.getInstance().getLocation();
 	
 	/**
 	 * This function is run when the robot is first started up and should 
@@ -84,30 +84,40 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		DriverStation.reportError("[   MODE   ] Autonomous...", true);
-		System.out.print("[  STATUS  ] dSLocation: " + dSLocation);
-		if(dSLocation == 2){
-			if (timer.get() < 3.0) {
-				double angle = spiGyro.getAngle();
-				myRobot.drive(-0.4, angle*Kp);	// drive forwards half speed, and correct heading with gyro				
-			}
-			else {
-				myRobot.drive(0.0, 0.0);		// stop robot
-			}
-		}
+//		System.out.print("[  STATUS  ] dSLocation: " + dSLocation); 
 		
-		else if(dSLocation == (1|3)){
-			if (timer.get() < 5.0) {
-				double angle = spiGyro.getAngle();
-				myRobot.drive(-0.4, angle*Kp);	// drive forwards half speed, and correct heading with gyro				
-			}
-			else {
-				myRobot.drive(0.0, 0.0);		// stop robot
-			}
+		if(timer.get() < 3.0) {
+			double angle = spiGyro.getAngle();
+			myRobot.drive(-0.4, angle*Kp);
 		}
 		else {
 			myRobot.drive(0.0, 0.0);
 		}
 	}
+	
+//		if(dSLocation == 2){
+//			if (timer.get() < 3.0) {
+//				double angle = spiGyro.getAngle();
+//				myRobot.drive(-0.4, angle*Kp);	// drive forwards half speed, and correct heading with gyro				
+//			}
+//			else {
+//				myRobot.drive(0.0, 0.0);		// stop robot
+//			}
+//		}
+//		
+//		else if(dSLocation == (1|3)){
+//			if (timer.get() < 5.0) {
+//				double angle = spiGyro.getAngle();
+//				myRobot.drive(-0.4, angle*Kp);	// drive forwards half speed, and correct heading with gyro				
+//			}
+//			else {
+//				myRobot.drive(0.0, 0.0);		// stop robot
+//			}
+//		}
+//		else {
+//			myRobot.drive(0.0, 0.0);
+//		}
+//	}
 	
 	
 	/**
@@ -147,7 +157,7 @@ public class Robot extends IterativeRobot {
 		motorLift();
 		motorGear();
 		//oneEighty();
-		backUp();
+		//backUp();
 		
 		myRobot.arcadeDrive(stick0Axis1*speedLimitMove, stick0Axis4*speedLimitRotate);
 	}
@@ -162,8 +172,8 @@ public class Robot extends IterativeRobot {
 	}	
 	
 	public void cameraInit() {
-        CameraServer.getInstance().startAutomaticCapture("Back Camera", 0).setResolution(128, 72);
-        CameraServer.getInstance().startAutomaticCapture("Front Camera", 1).setResolution(256, 144);
+        //CameraServer.getInstance().startAutomaticCapture("Back Camera", 0).setResolution(128, 72);
+        CameraServer.getInstance().startAutomaticCapture("Front Camera", 0).setResolution(256, 144);
 	}
 	
 	public void motorLift() {
@@ -242,13 +252,13 @@ public class Robot extends IterativeRobot {
 //		}
 //	}
 	
-	public void backUp() {
-		if(stick0POV==180){
-			timerTwo.reset();
-			timerTwo.start();
-			while(timerTwo.get()<0.2){
-				myRobot.arcadeDrive(-0.8, 0);
-			}
-		}
-	}
+//	public void backUp() {
+//		if(stick0POV==180){
+//			timerTwo.reset();
+//			timerTwo.start();
+//			while(timerTwo.get()<0.2){
+//				myRobot.arcadeDrive(-0.8, 0);
+//			}
+//		}
+//	}
 }
