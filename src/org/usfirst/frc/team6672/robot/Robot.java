@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.Encoder;
 
 
 /**
@@ -48,12 +50,36 @@ public class Robot extends IterativeRobot {
 	 * used for any initialization code.
 	 */
 	
+	Spark lMotor = new Spark(1);
+	Spark rMotor = new Spark(0);
+	
+	Encoder lEncoder = new Encoder(0,1);
+	Encoder rEncoder = new Encoder(2,3);
+	
+	PIDController lController = new PIDController(.1, .01, .001, .5, lEncoder, lMotor);
+	PIDController rController = new PIDController(.1, .01, .001, .5, rEncoder, rMotor);
+	
+	double distancePerPulse = Math.PI * 6 /360;
+	
 	@Override
 	public void robotInit() {
 		System.out.println("[  STATUS  ] Initiating...");
 		spiGyro.calibrate();
 		cameraInit();
 		System.out.println("[  STATUS  ] Initialized.");
+		
+		rMotor.setInverted(true);
+		rEncoder.setReverseDirection(true);
+		
+		lEncoder.setDistancePerPulse(distancePerPulse);
+		rEncoder.setDistancePerPulse(distancePerPulse);
+		
+		lController.setAbsoluteTolerance(1);
+		rController.setAbsoluteTolerance(1);
+		
+		lEncoder.reset();
+		rEncoder.reset();
+		
 	}
 	
 	/**
@@ -65,6 +91,15 @@ public class Robot extends IterativeRobot {
 		timer.reset();
 		timer.start();
 		spiGyro.reset();
+		
+		lEncoder.reset();
+		rEncoder.reset();
+		
+		lController.setSetpoint(64);
+		rController.setSetpoint(64);
+		
+		lController.enable();
+		rController.enable();
 	}
 
 	/**
@@ -73,27 +108,6 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void autonomousPeriodic() {
-		if(dSLocation == 2){
-			if (timer.get() < 3.0) {
-				double angle = spiGyro.getAngle();
-				myRobot.drive(-0.4, angle*Kp);	// drive forwards half speed, and correct heading with gyro				
-				System.out.println("[GYRO ANGLE] " + spiGyro.getAngle());
-			}
-			else {
-				myRobot.drive(0.0, 0.0);		// stop robot
-			}
-		}
-		
-		else if(dSLocation == (1|3)){
-			if (timer.get() < 5.0) {
-				double angle = spiGyro.getAngle();
-				myRobot.drive(-0.4, angle*Kp);	// drive forwards half speed, and correct heading with gyro				
-				System.out.println("[GYRO ANGLE] " + spiGyro.getAngle());
-			}
-			else {
-				myRobot.drive(0.0, 0.0);		// stop robot
-			}
-		}
 	}	
 	
 	/**
