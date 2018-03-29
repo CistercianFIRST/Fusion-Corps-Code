@@ -2,7 +2,7 @@ package org.usfirst.frc.team6672.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,7 +25,9 @@ import edu.wpi.first.wpilibj.Encoder;
 public class Robot extends IterativeRobot {
 	
 	/** Inital Variables **/
-	RobotDrive myRobot = new RobotDrive(1, 0);
+	Spark lMotor = new Spark(1);
+	Spark rMotor = new Spark(0);
+	DifferentialDrive myRobot = new DifferentialDrive(lMotor, rMotor);
 	Timer timer = new Timer();
 	
 	/* Joystick stuff */
@@ -44,31 +46,26 @@ public class Robot extends IterativeRobot {
 	Spark motorGear = new Spark(3);
 	
 	int dSLocation = DriverStation.getInstance().getLocation();
-		
-	/**
-	 * This function is run when the robot is first started up and should 
-	 * used for any initialization code.
-	 */
-	
-	Spark lMotor = new Spark(1);
-	Spark rMotor = new Spark(0);
 	
 	Encoder lEncoder = new Encoder(0,1);
 	Encoder rEncoder = new Encoder(2,3);
+	double p = 0.05, i = 0, d = 0;
 	
-	PIDController lController = new PIDController(.1, .01, .001, .5, lEncoder, lMotor);
-	PIDController rController = new PIDController(.1, .01, .001, .5, rEncoder, rMotor);
+	PIDController lController = new PIDController(.05, 0, 0, lEncoder, lMotor);
+	PIDController rController = new PIDController(.05, 0, 0, rEncoder, rMotor);
 	
 	double distancePerPulse = Math.PI * 6 /360;
 	
 	@Override
 	public void robotInit() {
+		SmartDashboard.putNumber("p", p);
+		SmartDashboard.putNumber("i", i);
+		SmartDashboard.putNumber("d", d);
 		System.out.println("[  STATUS  ] Initiating...");
 		spiGyro.calibrate();
-		cameraInit();
 		System.out.println("[  STATUS  ] Initialized.");
 		
-		rMotor.setInverted(true);
+		lMotor.setInverted(true);
 		rEncoder.setReverseDirection(true);
 		
 		lEncoder.setDistancePerPulse(distancePerPulse);
@@ -88,6 +85,13 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void autonomousInit() {
+		lController.setP(SmartDashboard.getNumber("p", 0));
+		lController.setI(SmartDashboard.getNumber("i", 0));
+		lController.setD(SmartDashboard.getNumber("d", 0));
+		rController.setP(SmartDashboard.getNumber("p", 0));
+		rController.setI(SmartDashboard.getNumber("i", 0));
+		rController.setD(SmartDashboard.getNumber("d", 0));
+
 		timer.reset();
 		timer.start();
 		spiGyro.reset();
@@ -108,6 +112,13 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void autonomousPeriodic() {
+//		System.out.print("R" + rController.getError());
+//		System.out.print("R" + rEncoder.getDistance());
+//		System.out.print("L" + lController.getError());
+//		System.out.print("L" + lEncoder.getDistance());
+		SmartDashboard.updateValues();
+		SmartDashboard.putNumber("encoder l", lEncoder.getDistance());
+		SmartDashboard.putNumber("encoder r", rEncoder.getDistance());
 	}	
 	
 	/**
@@ -117,6 +128,8 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void teleopInit() {
+		lController.disable();
+		rController.disable();
 	}
 
 	/**
@@ -143,11 +156,6 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void testPeriodic() {
 	}	
-	
-	public void cameraInit() {
-        CameraServer.getInstance().startAutomaticCapture("Back Camera", 0).setResolution(128, 72);
-        CameraServer.getInstance().startAutomaticCapture("Front Camera", 1).setResolution(256, 144);
-	}
 	
 	public void motorLift() {
 		if(stick0.getRawButton(12)){
@@ -229,7 +237,7 @@ public class Robot extends IterativeRobot {
 				System.out.println("[GYRO ANGLE] " + spiGyro.getAngle());
 				myRobot.arcadeDrive(0, speedLimitRotate);
 				if (stick0.getPOV(0)==0){
-					myRobot.drive(0, 0);
+					myRobot.arcadeDrive(0, 0);
 					break;
 				}
 			}
