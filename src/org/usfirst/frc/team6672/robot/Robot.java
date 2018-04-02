@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 
 
 /**
@@ -30,12 +31,14 @@ public class Robot extends IterativeRobot {
 	DifferentialDrive myRobot = new DifferentialDrive(lMotor, rMotor);
 	Timer timer = new Timer();
 	
+	SpeedControllerGroup driveMotors = new SpeedControllerGroup(lMotor, rMotor);
+	
 	/* Joystick stuff */
 	Joystick stick0 = new Joystick(0);
 
 	/* Speed Control System */
-	double speedLimitMove = 0.6;
-	double speedLimitRotate = -0.5;		// Has to be negative bc the joystick inverts l/r
+	double speedLimitMove = 0.8;
+	double speedLimitRotate = 0.7;		// Has to be negative bc the joystick inverts l/r
 	
 	/* Sensor Systems */
 	ADXRS450_Gyro spiGyro = new ADXRS450_Gyro();
@@ -49,10 +52,16 @@ public class Robot extends IterativeRobot {
 	
 	Encoder lEncoder = new Encoder(0,1);
 	Encoder rEncoder = new Encoder(2,3);
-	double p = 0.05, i = 0, d = 0;
+	double p = 0.015, i = 0, d = 0;
+	
+	// DRIVE STRAIGHT P VALUE: .015
+	// TURN P VALUE: .03
+	
 	
 	PIDController lController = new PIDController(.05, 0, 0, lEncoder, lMotor);
 	PIDController rController = new PIDController(.05, 0, 0, rEncoder, rMotor);
+	
+	PIDController driveController = new PIDController(.015, 0, 0, lEncoder, driveMotors);
 	
 	double distancePerPulse = Math.PI * 6 /360;
 	
@@ -65,14 +74,19 @@ public class Robot extends IterativeRobot {
 		spiGyro.calibrate();
 		System.out.println("[  STATUS  ] Initialized.");
 		
-		lMotor.setInverted(true);
 		rEncoder.setReverseDirection(true);
 		
 		lEncoder.setDistancePerPulse(distancePerPulse);
 		rEncoder.setDistancePerPulse(distancePerPulse);
 		
-		lController.setAbsoluteTolerance(1);
-		rController.setAbsoluteTolerance(1);
+		lController.setAbsoluteTolerance(2);
+		rController.setAbsoluteTolerance(2);
+		
+		driveController.setAbsoluteTolerance(2);
+		driveController.setOutputRange(-0.6, 0.6);
+		
+		rController.setOutputRange(-0.4, 0.4);
+		lController.setOutputRange(-0.4, 0.4);
 		
 		lEncoder.reset();
 		rEncoder.reset();
@@ -91,6 +105,9 @@ public class Robot extends IterativeRobot {
 		rController.setP(SmartDashboard.getNumber("p", 0));
 		rController.setI(SmartDashboard.getNumber("i", 0));
 		rController.setD(SmartDashboard.getNumber("d", 0));
+		driveController.setP(SmartDashboard.getNumber("p", 0));
+		driveController.setI(SmartDashboard.getNumber("i", 0));
+		driveController.setD(SmartDashboard.getNumber("d", 0));
 
 		timer.reset();
 		timer.start();
@@ -99,11 +116,17 @@ public class Robot extends IterativeRobot {
 		lEncoder.reset();
 		rEncoder.reset();
 		
-		lController.setSetpoint(64);
-		rController.setSetpoint(64);
+		lMotor.setInverted(true);
+		
+		lController.setSetpoint(16);
+		rController.setSetpoint(-16);
+		
+//		driveController.setSetpoint(190);
 		
 		lController.enable();
 		rController.enable();
+		
+//		driveController.enable();
 	}
 
 	/**
@@ -119,6 +142,15 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.updateValues();
 		SmartDashboard.putNumber("encoder l", lEncoder.getDistance());
 		SmartDashboard.putNumber("encoder r", rEncoder.getDistance());
+		
+		if (lController.onTarget()) {
+			lController.disable();
+			System.out.println("L Controller Disabled");
+		}
+		if (rController.onTarget()) { 
+			rController.disable();
+			System.out.println("R Controller Disabled");
+		}
 	}	
 	
 	/**
@@ -130,6 +162,11 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 		lController.disable();
 		rController.disable();
+		driveController.disable();
+		
+		lEncoder.reset();
+		rEncoder.reset();
+		lMotor.setInverted(false);
 	}
 
 	/**
@@ -144,8 +181,11 @@ public class Robot extends IterativeRobot {
 		motorLift();
 		motorGear();
 		oneEighty();
+		SmartDashboard.putNumber("encoder l", lEncoder.getDistance());
+		SmartDashboard.putNumber("encoder r", rEncoder.getDistance());
 
-		myRobot.arcadeDrive(stick0.getRawAxis(1)*speedLimitMove, stick0.getRawAxis(0)*speedLimitRotate);
+
+		myRobot.arcadeDrive(stick0.getRawAxis(1)*speedLimitMove, stick0.getRawAxis(4)*speedLimitRotate);
 	}
 	
 	
@@ -217,16 +257,16 @@ public class Robot extends IterativeRobot {
 	
 	public void speedControlRotate() {
 		if(stick0.getRawButton(7)){
-			speedLimitRotate = -0.5;
+			speedLimitRotate = 0.5;
 		}
 		if(stick0.getRawButton(8)){
-			speedLimitRotate= -0.6;
+			speedLimitRotate= 0.6;
 		}
 		if(stick0.getRawButton(9)){
-			speedLimitRotate = -0.7;
+			speedLimitRotate = 0.7;
 		}
 		if(stick0.getRawButton(10)){
-			speedLimitRotate = -1;	
+			speedLimitRotate = 1;	
 		}
 	}
 	
